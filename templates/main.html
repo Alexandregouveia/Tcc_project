@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+      <header>
+          <h2 class="wellcome"><center>Bem vindo, {{user}}</center></h2>
+      </header>
+      
+      <div class="container box">
+        <table class="table table-hover table-bordered" id='userFiles'></table>
+      </div>
+      
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        console.log(htmlDecode('{{data}}'))
+        var table = document.getElementById('userFiles');
+        try {
+            var data = JSON.parse(htmlDecode("{{data}}").replace(/'/g,'"'));
+            var keys = Object.keys(data[0])
+            
+            table.innerHTML = buildHeader(keys,'{{action}}') + buildEditTable(data,'{{action}}');
+
+            var views = document.getElementsByName("view");
+            for (var i=0; i<views.length; i++){
+                views[i].addEventListener('click',del);
+            }    
+        } catch{
+            table.innerHTML = "<h3><center>Você ainda não possui arquivos no sistema</center></h3>";
+        }
+        
+        
+        
+    </script>
+{% endblock %}

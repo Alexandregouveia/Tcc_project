@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Cadastro</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link  rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  </head>
+  <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="alert alert-warning">
+                <ul class=flashes>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        <form class="formulario" action="/create" method="post">
+    
+            <div class="container box">
+            <input type="text" name="Name" id="Name" placeholder="Nome" required>
+            <input type="email" name="Email" id="Email" placeholder="E-mail" required>
+            <input type="password" name="Senha" id="Senha" placeholder="Senha" required>
+            <input type="password" name="cSenha" id="cSenha" placeholder="Confirmar senha" required>
+            
+            <button type="submit" id="submit">Confirmar</button>
+            </div>
+        
+            
+        </form>
+        <!-- Optional JavaScript -->
+        <script>
+            var senha = document.getElementById("Senha");
+            var cSenha = document.getElementById("cSenha");
+            senha.addEventListener("change",Checar);
+            cSenha.addEventListener("change",Checar);
+
+            function Checar(){
+                if (senha.value != "" && cSenha.value != ""){
+                    if (senha.value != cSenha.value){
+                        cSenha.setCustomValidity("As senhas são diferente");
+                        
+                    }else{
+                        setCustomValidity('')
+                    }
+                }
+            }
+
+        </script>  
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

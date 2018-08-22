@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload {% endblock %}
+
+{% block content%}
+
+        <style>
+        td{ text-align: center }
+        </style>
+
+        <form class="formulario" style="flex-wrap:wrap;" action = "http://localhost:5000/result" method = "POST" 
+            enctype = "multipart/form-data">
+            <div class="box" style="padding:2%;">
+                <span class="espaco">Selecione um arquivo(xls, xlsx ou csv)</span>
+                <br>
+                <input class="espaco" type = "file" name = "file" />
+                <br>
+                <input class="espaco" type="checkbox" name="header" > <span>Contém cabeçalho ?</span> 
+                <br>
+                <input type="checkbox" name="alternative" > <span>As alternativas possuem nome ?</span>
+                <br>
+            </div>
+                        
+            <br>
+            <div>
+                <table class="table box">
+                    <tr><th colspan="5" class="text-center">Peso dos atributos</th></tr>
+                    <tr>
+                        <th class="text-center">Peso 1</th>
+                        <th class="text-center">Peso 2</th>
+                        <th class="text-center">Peso 3</th>
+                        <th class="text-center">Peso 4</th>
+                        
+                    </tr>
+                    <tr>
+                        <td><input class="" name="peso" type="number" min="0" max="1" step="0.1" value="0" size="2" id="peso_1"></td>
+                        <td><input class="" name="peso" type="number" min="0" max="1" step="0.1" value="0" size="2" id="peso_2"></td>
+                        <td><input class="" name="peso" type="number" min="0" max="1" step="0.1" value="0" size="2" id="peso_3"></td>
+                        <td><input class="" name="peso" type="number" min="0" max="1" step="0.1" value="0" size="2" id="peso_4"></td>
+                        
+                    </tr>
+                </table>
+            </div>
+            
+            <br>
+            <button type = "submit">Enviar dados </button>
+        </form>
+        
+        
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script>
+    var inputPeso = document.getElementsByName("peso");
+    for (var i=0; i<inputPeso.length; i++){
+        inputPeso[i].addEventListener("change", function(){
+            var conv = parseInt(this.value);
+            if (isNaN(conv)){
+                this.classList.add("pesos");
+            }else{
+                this.classList.remove("pesos");
+                
+            }
+        });
+    }
+    </script>
+
+{% endblock %}
