@@ -32,7 +32,7 @@ def write_file(data, filename):
 
 
 
-#TOPSIS method
+#TOPSIS methodnp.ra
 def TOPSIS(weights, array, names=False):
     
     #1 Normaliza os dados
@@ -41,27 +41,32 @@ def TOPSIS(weights, array, names=False):
     #2 Aplica os pesos
     for i in range (array.shape[1]):
         norm[:,i] = np.multiply(norm[:,i],weights[i])
+    #ate aqui ok!
     
     #3 Encontra o maximo e o minimo
     Vp = [np.amax(norm[:,col]) for col in range (norm.shape[1])]
     Vm = [np.amin(norm[:,col]) for col in range (norm.shape[1])]
-
-    #4 Calcular medida de separação (positiva)
-    #4.1 lista com o quadrado da distância entre Vij e Vj+
-    Sn = [(norm[row,col] - Vp[col])**2 for col in range(norm.shape[1]) for row in range (norm.shape[0])]
     
+    
+    #4 Calcular medida de separação (positiva)
+    
+    #4.1 lista com o quadrado da distância entre Vij e Vj+
+    Sp = [(norm[row,col] - Vp[col])**2 for col in range(norm.shape[1]) for row in range (norm.shape[0])]
+    
+
     #4.2 Transforma a lista anterior em numpy array
-    Sn = np.array(Sn)
-    Sn = Sn.reshape(norm.shape)
+    Sp = np.array(Sp)
+    Sp = Sp.reshape(norm.shape)
 
     #4.3 Somatório das alternativas 
-    Sn = Sn.sum(axis= 1) 
+    Sp = Sp.sum(axis= 1) 
     
     #4.4 Raiz quadrada dos somatórios
-    Sn = [np.sqrt(Sn[row]) for row in range (Sn.shape[0])]
-
+    Sp = [np.sqrt(Sp[row]) for row in range (Sp.shape[0])]
+#    print (Sp)
 
     #5 Calcular medida de separação (negativa)
+    
     #5.1 lista com o quadrado da distância entre Vij e Vj+
     Sn = [(norm[row,col] - Vm[col])**2 for col in range(norm.shape[1]) for row in range (norm.shape[0])]
 
@@ -74,23 +79,22 @@ def TOPSIS(weights, array, names=False):
 
     #5.4 Raiz quadrada dos somatórios
     Sn = [np.sqrt(Sn[row]) for row in range (Sn.shape[0])]
-
+    
 
     #6 Calcular a aproximidade relativa 
-    c = np.array([Sn[i]/(Sn[i] + Sn[i]) for i in range (norm.shape[0])])
-
+    c = np.array([Sn[i]/(Sn[i] + Sp[i]) for i in range (norm.shape[0])])
     
 
     #7 Ordernar resultados
     #7.1 Nomeia as alternativas para serem identificadas após a ordenação
     if (not(names)): # caso não seja passado um nome para as alternativas eles serão gerados aqui
-        names = ['Alternativa' + str(rows) for rows in range (norm.shape[0])]
+        names = ['Alternativa ' + str(rows) for rows in range (norm.shape[0])]
 
     df = pd.DataFrame(pd.DataFrame(names))
-    df = df.append(c)
-    
-    #7.2 Ordena o dataframe
-    df = df.sort_values(by=[1],ascending=False)
+    df["TOPSIS"] = pd.DataFrame(c)
+#    
+#    #7.2 Ordena o dataframe
+    df = df.sort_values(by=["TOPSIS"],ascending=False)
 
     return df
 

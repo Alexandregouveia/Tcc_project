@@ -88,3 +88,35 @@ li:hover{
     background: #669999;
     
 }
+
+span.tooltip span {
+    font-size: 10px;
+    position:absolute;
+    z-index: 999;
+    white-space:nowrap;
+    bottom:9999px;
+    left: 50%;
+    background:#000;
+    color:#e0e0e0;
+    padding:0px 7px;
+    line-height: 24px;
+    height: 24px;
+     
+    opacity: 0; 
+    transition:opacity 0.4s ease-out; 
+    }       
+     
+span.tooltip span::before {
+    content: "";
+    display: block;
+    border-left: 6px solid #000000;
+    border-top: 6px solid transparent;
+    position: absolute;
+    top: -6px;
+    left: 0px;
+    }
+     
+span.tooltip:hover span {
+    opacity: 1;
+    bottom:-35px;
+    }
