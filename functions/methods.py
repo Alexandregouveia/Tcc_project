@@ -2,6 +2,7 @@ from sklearn.preprocessing import normalize
 import pandas as pd
 import numpy as np
 import re
+import math
 
 def checkType(inputfile):
     return (re.findall(pattern = r'\.\w*', string = inputfile))[-1]
@@ -32,7 +33,7 @@ def write_file(data, filename):
 
 
 
-#TOPSIS methodnp.ra
+#TOPSIS method -Recebe uma numpy array retorna um dataframe
 def TOPSIS(weights, array, names=False):
     
     #1 Normaliza os dados
@@ -92,8 +93,8 @@ def TOPSIS(weights, array, names=False):
 
     df = pd.DataFrame(pd.DataFrame(names))
     df["TOPSIS"] = pd.DataFrame(c)
-#    
-#    #7.2 Ordena o dataframe
+    
+    #7.2 Ordena o dataframe
     df = df.sort_values(by=["TOPSIS"],ascending=False)
 
     return df
@@ -101,6 +102,75 @@ def TOPSIS(weights, array, names=False):
 
 def PROMETHEE_II(array, weights, names=False):
     
-    d = [np.subtract(a,b) for a in range (array.shape()[0]) for b in range (array.shape()[0]) if (not(np.equal(a,b).all()))]
+    # d = [np.subtract(a,b) for a in range (array.shape[0]) for b in range (array.shape[0]) if (not(np.equal(a,b).all()))]
+    #Confronta as alternativas
+    array = normalize(array)
+    row=[]
+    for a in range (array.shape[0]):
+        for b in range (array.shape[0]):
+            parcial =[]
+            print(array[a],array[b])
+            if (a!=b):
+                for k in range (array.shape[1]):
+                    if (array[a,k]<=array[b,k]):
+                        parcial.append(0)
+                    else:
+                        parcial.append(array[a,k]-array[b,k])
+            else:
+                for k in range (array.shape[1]):
+                    parcial.append(0)
+            row.append(parcial)
+
+    valors = addWeights(np.asarray(row), weights)
+
+    pi=[]
+    for row in range(valors.shape[0]):
+        pi.append(sum(valors[row]))
+
+    pi = np.asarray(pi)
+    rang=  math.sqrt(pi.shape[0])
+
     
-    return 0
+    #Calculo de sobreclassificação positiva
+    pos=[]
+    for r in range(rang):
+        if (rang==0):
+            pos.append(pi[r] + pi[2**r] + pi[1+2**r])
+        else:
+            pos.append(pi[r + r**2] + pi[1 + r + 2**r])
+
+    
+    #Calculo de sobreclassificação negativa
+    neg=[]
+    for i in range(rang):
+        neg.append(pi[rang*0 +r] + pi[rang*1 + r] +pi[rang*2 + r])
+
+    
+    #Calcula o fluxo final
+    final =[]
+    for row in range(len(pos)):
+        final.append(pos[row] - neg[row])
+
+    final = np.asarray(final)
+
+    if (not(names)): # caso não seja passado um nome para as alternativas eles serão gerados aqui
+        names = ['Alternativa ' + str(rows) for rows in range (final.shape[0])]
+
+    df = pd.DataFrame(pd.DataFrame(names))
+    df["PROMETHEE"] = pd.DataFrame(final)
+    
+    #7.2 Ordena o dataframe
+    df = df.sort_values(by=["PROMETHEE"],ascending=False)
+
+
+    return valors
+
+
+def addWeights(array, weights):
+    results=[]
+    for i in range(array.shape[0]):
+        row=[]
+        for j in range(array.shape[1]):
+            row.append((array[i,j]*weights[j])/weights[j])
+        results.append(row)
+    return np.asarray(results)
