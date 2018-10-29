@@ -121,7 +121,7 @@ def up():
     if (request.method == 'POST'):
         arquivo = request.files['file']
         files = Files(current_user.get_id(), arquivo.filename, arquivo.read(), datetime.date.today())
-        
+        pesos = [float(request.form['peso_1']),float(request.form['peso_2']),float(request.form['peso_3']),float(request.form['peso_4'])]
 
         try: # tenta adicionar informações ao banco
             db.session.add(files)
@@ -133,14 +133,14 @@ def up():
         try: #with header
             check = request.form['header']
             if ((checkType(files.filename)=='.xls') or (checkType(files.filename)=='.xlsx')):
-                dados=str(xlsToJson(arquivo,check))
+                dados=str(Processa_xls(arquivo, pesos, check))
             elif (checkType(arquivo.filename)=='.cvs'):
-                dados=str(csvToJson(arquivo,check))
+                dados=str(Processa_csv(arquivo, pesos, check))
         except: #without header
             if ((checkType(arquivo.filename)=='.xls') or (checkType(files.filename)=='.xlsx')):
-                dados=xlsToJson(arquivo,'')
+                dados=dados=str(Processa_xls(arquivo, pesos, ''))
             else:
-                dados=csvToJson(arquivo,'')
+                dados=dados=str(Processa_xls(arquivo, pesos, ''))
             
                 
         return render_template("result.html",dados=dados,user=current_user.get_id())
@@ -177,9 +177,9 @@ def view():
     return render_template('result.html', dados=dados)
 
 #--------------------------------------------------------------------------------------------------------------------
-@app.errorhandler(400)
-def erro400(error):
-    return render_template('erro400.html', user = current_user.get_id())
+# @app.errorhandler(400)
+# def erro400(error):
+#     return render_template('erro400.html', user = current_user.get_id())
 
 
 if __name__ == "__main__":

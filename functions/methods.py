@@ -7,6 +7,36 @@ import math
 def checkType(inputfile):
     return (re.findall(pattern = r'\.\w*', string = inputfile))[-1]
 
+#Processa planilhas excel
+def Processa_xls(inputfile,weights , header, names=False):
+    if (header=='on'):
+        arq = pd.read_excel(inputfile)
+    else:
+        arq = pd.read_excel(inputfile,header=None)
+    arq = np.asarray(arq, dtype=np.int32)
+    out_p = PROMETHEE_II(arq,weights)
+    out_t = TOPSIS(arq,weights)
+    concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
+    out_e = eucl(concat)
+
+    Retorno = concat.to_json(orient='records')
+    return Retorno
+
+#Processa arquivos csv
+def Processa_csv(inputfile,weights , header):
+    if (header=='on'):
+        arq = pd.read_csv(inputfile)
+    else:
+        arq = pd.read_csv(inputfile,header=None)
+    
+    out_p = PROMETHEE_II(inputfile,weights)
+    out_t = TOPSIS(inputfile,weights)
+    concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
+    out_e = eucl(concat)
+
+    Retorno = concat.to_json(orient='records')
+    return Retorno
+
 #Recebe uma planilha(xls ou xlsx) e retorna um array de json
 def xlsToJson(inputfile, header):
     if (header=='on'):
@@ -34,7 +64,7 @@ def write_file(data, filename):
 
 
 #TOPSIS method -Recebe uma numpy array retorna um dataframe
-def TOPSIS(weights, array, names=False):
+def TOPSIS(array, weights, names=False):
     
     #1 Normaliza os dados
     norm = normalize(array)
@@ -109,7 +139,7 @@ def PROMETHEE_II(array, weights, names=False):
     for a in range (array.shape[0]):
         for b in range (array.shape[0]):
             parcial =[]
-            print(array[a],array[b])
+            # print(array[a],array[b])
             if (a!=b):
                 for k in range (array.shape[1]):
                     if (array[a,k]<=array[b,k]):
@@ -120,7 +150,7 @@ def PROMETHEE_II(array, weights, names=False):
                 for k in range (array.shape[1]):
                     parcial.append(0)
             row.append(parcial)
-
+    # print(row)
     valors = addWeights(np.asarray(row), weights)
 
     pi=[]
@@ -128,7 +158,7 @@ def PROMETHEE_II(array, weights, names=False):
         pi.append(sum(valors[row]))
 
     pi = np.asarray(pi)
-    rang=  math.sqrt(pi.shape[0])
+    rang=  int(math.sqrt(pi.shape[0]))
 
     
     #Calculo de sobreclassificação positiva
@@ -163,14 +193,29 @@ def PROMETHEE_II(array, weights, names=False):
     df = df.sort_values(by=["PROMETHEE"],ascending=False)
 
 
-    return valors
+    return df
 
-
+#Função para adicionar pesos ao valores
 def addWeights(array, weights):
+
+    # print(weights, type(weights[0]))
     results=[]
     for i in range(array.shape[0]):
         row=[]
         for j in range(array.shape[1]):
-            row.append((array[i,j]*weights[j])/weights[j])
+            row.append(array[i,j]*weights[j])
         results.append(row)
     return np.asarray(results)
+
+#Função para calcular a distancia euclidiana
+def eucl(data):
+    
+    euclidiana = np.asarray([math.sqrt(math.pow(rows['TOPSIS'],2) + math.pow(rows['PROMETHEE'],2)) for index,rows in data.iterrows()])
+
+    # df = pd.DataFrame(pd.DataFrame(euclidiana.columns.values))
+    data["RESULTADO"] = euclidiana
+    
+    #Ordena o dataframe
+    # df = df.sort_values(by=["RESULTADO"],ascending=False)
+    return data.sort_values(by=["RESULTADO"],ascending=False)
+    

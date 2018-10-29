@@ -16,7 +16,7 @@
         console.log(htmlDecode('{{data}}'))
         var table = document.getElementById('userFiles');
         try {
-            var data = JSON.parse(htmlDecode("{{data}}").replace(/'/g,'"'));
+            var data = JSON.parse(htmlDecode("{{data | safe}}").replace(/'/g,'"'));
             var keys = Object.keys(data[0])
             
             table.innerHTML = buildHeader(keys,'{{action}}') + buildEditTable(data,'{{action}}');

@@ -2,7 +2,7 @@
 function buildHeader(values,action){
     var header = "<tr> <th> # </th>";
     console.log(action)
-    for (var i=0; i<values.length; i++){
+    for (var i=1; i<values.length; i++){
         header += "<th >"+values[i]+"</th>";
     }
     if (action){
@@ -18,8 +18,8 @@ function buildEditTable(jsonArray,action){
     var linhas ="";
     var keys = Object.keys(jsonArray[0]);
     for (var i=0; i<jsonArray.length; i++){
-        linhas += "<tr > <td>" + (i+1) + "</td>";
-        for (var j=0; j<keys.length; j++){
+        linhas += "<tr > <td>" + jsonArray[i][keys[0]] + "</td>";
+        for (var j=1; j<keys.length; j++){
             linhas += "<td>" + jsonArray[i][keys[j]] + "</td>";
         }
         if (action){
