@@ -14,6 +14,7 @@ def Processa_xls(inputfile,weights , header, names=False):
     else:
         arq = pd.read_excel(inputfile,header=None)
     arq = np.asarray(arq, dtype=np.int32)
+    print(len(arq))
     out_p = PROMETHEE_II(arq,weights)
     out_t = TOPSIS(arq,weights)
     concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
@@ -159,23 +160,21 @@ def PROMETHEE_II(array, weights, names=False):
 
     pi = np.asarray(pi)
     rang=  int(math.sqrt(pi.shape[0]))
-
+    pi = np.reshape(pi, (rang, rang)) 
     
-    #Calculo de sobreclassificação positiva
+    print(pi.shape)
+    #Calculo de sobreclassificação positiva (ERRO)
     pos=[]
-    for r in range(rang):
-        if (rang==0):
-            pos.append(pi[r] + pi[2**r] + pi[1+2**r])
-        else:
-            pos.append(pi[r + r**2] + pi[1 + r + 2**r])
+    for i in range (pi.shape[0]):
+        pos.append(sum(pi[i,]))
 
     
     #Calculo de sobreclassificação negativa
     neg=[]
-    for i in range(rang):
-        neg.append(pi[rang*0 +r] + pi[rang*1 + r] +pi[rang*2 + r])
+    for i in range (pi.shape[0]):
+        neg.append(sum(pi[:,i]))
 
-    
+    #return(neg, pos)
     #Calcula o fluxo final
     final =[]
     for row in range(len(pos)):
