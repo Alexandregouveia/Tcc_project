@@ -65,7 +65,7 @@ def signUp():
             except:
                 print ('diretorio ja existe')   
             flash("Usuário cadastrado com sucesso")
-    return render_template("cadastro.html")
+    return render_template("login.html")
 
 #------------------------------------TELA INICIAL------------------------------------------------------
 @app.route("/", methods=['GET','POST'])
@@ -109,6 +109,7 @@ def home():
 
 #-----------------------------------PAGINA DE UPLOAD-----------------------------------------------
 @app.route("/upload", methods=['GET','POST'])
+@cross_origin()
 @login_required
 def upload():
     # return current_user.get_id()
