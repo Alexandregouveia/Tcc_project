@@ -1,4 +1,4 @@
-//Cria cabeçalho da tabela (True - para adicioonar a coluna ações)
+//Cria cabeçalho da tabela (True - para adicionar a coluna ações)
 function buildHeader(values,action){
     var header = "<tr> <th> # </th>";
     console.log(action)

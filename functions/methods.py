@@ -206,15 +206,15 @@ def addWeights(array, weights):
         results.append(row)
     return np.asarray(results)
 
-#Função para calcular a distancia euclidiana
+#Função para calcular a média dos resultados
 def eucl(data):
     
-    euclidiana = np.asarray([math.sqrt(math.pow(rows['TOPSIS'],2) + math.pow(rows['PROMETHEE'],2)) for index,rows in data.iterrows()])
+    media = np.asarray([(rows['TOPSIS'] + rows['PROMETHEE'])/2 for index,rows in data.iterrows()])
 
     # df = pd.DataFrame(pd.DataFrame(euclidiana.columns.values))
-    data["RESULTADO"] = euclidiana
+    data["Media"] = media
     
     #Ordena o dataframe
     # df = df.sort_values(by=["RESULTADO"],ascending=False)
-    return data.sort_values(by=["RESULTADO"],ascending=False)
+    return data
     
