@@ -13,8 +13,8 @@ def Processa_xls(inputfile,weights , header, names=False):
         arq = pd.read_excel(inputfile)
     else:
         arq = pd.read_excel(inputfile,header=None)
-    arq = np.asarray(arq, dtype=np.int32)
-    print(len(arq))
+    arq = np.asarray(arq)
+    # print(len(arq))
     out_p = PROMETHEE_II(arq,weights)
     out_t = TOPSIS(arq,weights)
     concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
@@ -30,8 +30,9 @@ def Processa_csv(inputfile,weights , header):
     else:
         arq = pd.read_csv(inputfile,header=None)
     
-    out_p = PROMETHEE_II(inputfile,weights)
-    out_t = TOPSIS(inputfile,weights)
+    arq = np.asarray(arq)
+    out_p = PROMETHEE_II(arq,weights)
+    out_t = TOPSIS(arq,weights)
     concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
     out_e = eucl(concat)
 
@@ -114,9 +115,11 @@ def TOPSIS(array, weights, names=False):
     
 
     #6 Calcular a aproximidade relativa 
-    c = np.array([Sn[i]/(Sn[i] + Sp[i]) for i in range (norm.shape[0])])
+    # p = np.array([Sp[i]/(Sn[i] + Sp[i] ) for i in range (norm.shape[0])])
+    c = np.array([Sn[i]/(Sn[i] + Sp[i] ) for i in range (norm.shape[0])])
     
-
+    # c = [math.sqrt(math.pow(n[i],2) + math.pow(p[i],2)) for i in range (norm.shape[0])]
+    
     #7 Ordernar resultados
     #7.1 Nomeia as alternativas para serem identificadas após a ordenação
     if (not(names)): # caso não seja passado um nome para as alternativas eles serão gerados aqui
@@ -126,9 +129,10 @@ def TOPSIS(array, weights, names=False):
     df["TOPSIS"] = pd.DataFrame(c)
     
     #7.2 Ordena o dataframe
-    df = df.sort_values(by=["TOPSIS"],ascending=False)
-
+    # df = df.sort_values(by=["TOPSIS"],ascending=False)
+    
     return df
+    
 
 
 def PROMETHEE_II(array, weights, names=False):
