@@ -166,8 +166,8 @@ def PROMETHEE_II(array, weights, names=False):
     rang=  int(math.sqrt(pi.shape[0]))
     pi = np.reshape(pi, (rang, rang)) 
     
-    print(pi.shape)
-    #Calculo de sobreclassificação positiva (ERRO)
+    # print(pi.shape)
+    #Calculo de sobreclassificação positiva 
     pos=[]
     for i in range (pi.shape[0]):
         pos.append(sum(pi[i,]))
@@ -193,7 +193,7 @@ def PROMETHEE_II(array, weights, names=False):
     df["PROMETHEE"] = pd.DataFrame(final)
     
     #7.2 Ordena o dataframe
-    df = df.sort_values(by=["PROMETHEE"],ascending=False)
+    # df = df.sort_values(by=["PROMETHEE"],ascending=False)
 
 
     return df
@@ -218,7 +218,17 @@ def eucl(data):
     # df = pd.DataFrame(pd.DataFrame(euclidiana.columns.values))
     data["Media"] = media
     
-    #Ordena o dataframe
-    # df = df.sort_values(by=["RESULTADO"],ascending=False)
+    
     return data
     
+def euclidian(data):
+    
+    topMax = data['TOPSIS'].max()
+    proMax = data['PROMETHEE'].max()
+    
+    distEucl = np.asarray([math.sqrt((rows["TOPSIS"] - topMax)**2 + (rows["PROMETHEE"] - proMax)**2)  for index,rows in data.iterrows()])
+
+    data["Euclidiana"] = distEucl
+    
+    
+    return data
