@@ -18,7 +18,7 @@ def Processa_xls(inputfile,weights , header, names=False):
     out_p = PROMETHEE_II(arq,weights)
     out_t = TOPSIS(arq,weights)
     concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
-    out_e = eucl(concat)
+    out_e = media(concat)
 
     Retorno = concat.to_json(orient='records')
     return Retorno
@@ -211,7 +211,7 @@ def addWeights(array, weights):
     return np.asarray(results)
 
 #Função para calcular a média dos resultados
-def eucl(data):
+def media(data):
     
     media = np.asarray([(rows['TOPSIS'] + rows['PROMETHEE'])/2 for index,rows in data.iterrows()])
 
@@ -226,7 +226,7 @@ def euclidian(data):
     topMax = data['TOPSIS'].max()
     proMax = data['PROMETHEE'].max()
     
-    distEucl = np.asarray([math.sqrt((rows["TOPSIS"] - topMax)**2 + (rows["PROMETHEE"] - proMax)**2)  for index,rows in data.iterrows()])
+    distEucl = np.asarray([math.sqrt(topMax - (rows["TOPSIS"])**2 + (proMax - rows["PROMETHEE"] )**2)  for index,rows in data.iterrows()])
 
     data["Euclidiana"] = distEucl
     
