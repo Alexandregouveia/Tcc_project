@@ -18,9 +18,9 @@ def Processa_xls(inputfile,weights , header, names=False):
     out_p = PROMETHEE_II(arq,weights)
     out_t = TOPSIS(arq,weights)
     concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
-    out_e = media(concat)
+    out_e = euclidian(concat)
 
-    Retorno = concat.to_json(orient='records')
+    Retorno = out_e.to_json(orient='records')
     return Retorno
 
 #Processa arquivos csv
@@ -34,9 +34,9 @@ def Processa_csv(inputfile,weights , header):
     out_p = PROMETHEE_II(arq,weights)
     out_t = TOPSIS(arq,weights)
     concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
-    out_e = eucl(concat)
+    out_e = euclidian(concat)
 
-    Retorno = concat.to_json(orient='records')
+    Retorno = out_e.to_json(orient='records')
     return Retorno
 
 #Recebe uma planilha(xls ou xlsx) e retorna um array de json
@@ -69,8 +69,16 @@ def write_file(data, filename):
 def TOPSIS(array, weights, names=False):
     
     #1 Normaliza os dados
-    norm = normalize(array)
-
+#    norm = normalize(array)
+    norm = []
+    for i in range(array.shape[1]):
+#        print (array[:,i])
+        norm.append(normaliza(array[:,i]))
+#        print (normaliza(array[:,i]))
+#        print (norm)
+    norm = np.asanyarray(norm)
+    norm = norm.reshape(array.shape)
+    
     #2 Aplica os pesos
     for i in range (array.shape[1]):
         norm[:,i] = np.multiply(norm[:,i],weights[i])
@@ -123,7 +131,7 @@ def TOPSIS(array, weights, names=False):
     #7 Ordernar resultados
     #7.1 Nomeia as alternativas para serem identificadas após a ordenação
     if (not(names)): # caso não seja passado um nome para as alternativas eles serão gerados aqui
-        names = ['Alternativa ' + str(rows) for rows in range (norm.shape[0])]
+        names = ['Alternativa ' + str(rows + 1) for rows in range (norm.shape[0])]
 
     df = pd.DataFrame(pd.DataFrame(names))
     df["TOPSIS"] = pd.DataFrame(c)
@@ -139,7 +147,7 @@ def PROMETHEE_II(array, weights, names=False):
     
     # d = [np.subtract(a,b) for a in range (array.shape[0]) for b in range (array.shape[0]) if (not(np.equal(a,b).all()))]
     #Confronta as alternativas
-    array = normalize(array)
+    
     row=[]
     for a in range (array.shape[0]):
         for b in range (array.shape[0]):
@@ -185,9 +193,11 @@ def PROMETHEE_II(array, weights, names=False):
         final.append(pos[row] - neg[row])
 
     final = np.asarray(final)
+    final = normalize(final.reshape(1,final.size))
+    final = final.reshape(final.size,1)
 
     if (not(names)): # caso não seja passado um nome para as alternativas eles serão gerados aqui
-        names = ['Alternativa ' + str(rows) for rows in range (final.shape[0])]
+        names = ['Alternativa ' + str(rows + 1) for rows in range (final.shape[0])]
 
     df = pd.DataFrame(pd.DataFrame(names))
     df["PROMETHEE"] = pd.DataFrame(final)
@@ -210,6 +220,7 @@ def addWeights(array, weights):
         results.append(row)
     return np.asarray(results)
 
+
 #Função para calcular a média dos resultados
 def media(data):
     
@@ -220,6 +231,15 @@ def media(data):
     
     
     return data
+
+def normaliza(x):
+    sig=0
+    for i in range(x.size):
+        sig = sig + math.pow(x[i],2)
+        
+    sig = math.sqrt(sig)
+    return np.asanyarray([x[i]/sig for i in range (x.size)])
+
     
 def euclidian(data):
     
