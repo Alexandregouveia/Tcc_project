@@ -122,7 +122,7 @@ def up():
     if (request.method == 'POST'):
         arquivo = request.files['file']
         files = Files(current_user.get_id(), arquivo.filename, arquivo.read(), datetime.date.today())
-        pesos = [float(request.form['peso_1']),float(request.form['peso_2']),float(request.form['peso_3']),float(request.form['peso_4'])]
+        pesos = [float(request.form['peso_1']),float(request.form['peso_2']),float(request.form['peso_3']),float(request.form['peso_4']),float(request.form['peso_5'])]
 
         try: # tenta adicionar informações ao banco
             db.session.add(files)

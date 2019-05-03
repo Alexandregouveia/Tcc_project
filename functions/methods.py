@@ -13,8 +13,10 @@ def Processa_xls(inputfile,weights , header, names=False):
         arq = pd.read_excel(inputfile)
     else:
         arq = pd.read_excel(inputfile,header=None)
+        
+    arq.iloc[:,-1] = arq.iloc[:,-1].apply(div)
+    arq.iloc[:,-2] = arq.iloc[:,-2].apply(div)
     arq = np.asarray(arq)
-    # print(len(arq))
     out_p = PROMETHEE_II(arq,weights)
     out_t = TOPSIS(arq,weights)
     concat = pd.concat([out_p,out_t["TOPSIS"]],axis=1)
@@ -29,7 +31,9 @@ def Processa_csv(inputfile,weights , header):
         arq = pd.read_csv(inputfile)
     else:
         arq = pd.read_csv(inputfile,header=None)
-    
+        
+    arq.iloc[:,-1] = arq.iloc[:,-1].apply(div)
+    arq.iloc[:,-2] = arq.iloc[:,-2].apply(div)
     arq = np.asarray(arq)
     out_p = PROMETHEE_II(arq,weights)
     out_t = TOPSIS(arq,weights)
@@ -153,22 +157,15 @@ def PROMETHEE_II(array, weights, names=False):
         for b in range (array.shape[0]):
             parcial =[]
             # print(array[a],array[b])
-            if (a!=b):
-                for k in range (array.shape[1]):
-                    if (array[a,k]<=array[b,k]):
-                        parcial.append(0)
-                    else:
-                        parcial.append(array[a,k]-array[b,k])
-            else:
-                for k in range (array.shape[1]):
-                    parcial.append(0)
+            for k in range (array.shape[1]):
+                    parcial.append(array[a,k]-array[b,k])
             row.append(parcial)
     # print(row)
     valors = addWeights(np.asarray(row), weights)
 
     pi=[]
     for row in range(valors.shape[0]):
-        pi.append(sum(valors[row]))
+        pi.append(sum(valors[row])/sum(weights))
 
     pi = np.asarray(pi)
     rang=  int(math.sqrt(pi.shape[0]))
@@ -178,13 +175,13 @@ def PROMETHEE_II(array, weights, names=False):
     #Calculo de sobreclassificação positiva 
     pos=[]
     for i in range (pi.shape[0]):
-        pos.append(sum(pi[i,]))
+        pos.append(sum(pi[i,])/(pi.shape[0]-1))
 
     
     #Calculo de sobreclassificação negativa
     neg=[]
     for i in range (pi.shape[0]):
-        neg.append(sum(pi[:,i]))
+        neg.append(sum(pi[:,i])/(pi.shape[0]-1))
 
     #return(neg, pos)
     #Calcula o fluxo final
@@ -252,3 +249,6 @@ def euclidian(data):
     
     
     return data
+
+def div(x):
+    return 1000/x
