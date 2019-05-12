@@ -74,14 +74,7 @@ def TOPSIS(array, weights, names=False):
     
     #1 Normaliza os dados
 #    norm = normalize(array)
-    norm = []
-    for i in range(array.shape[1]):
-#        print (array[:,i])
-        norm.append(normaliza(array[:,i]))
-#        print (normaliza(array[:,i]))
-#        print (norm)
-    norm = np.asanyarray(norm)
-    norm = norm.reshape(array.shape)
+    norm = normaliza(array)
     
     #2 Aplica os pesos
     for i in range (array.shape[1]):
@@ -231,11 +224,12 @@ def media(data):
 
 def normaliza(x):
     sig=0
-    for i in range(x.size):
-        sig = sig + math.pow(x[i],2)
+    for i in range(x.shape[0]):
+        for j in range(x.shape[1]):
+            sig = sig + math.pow(x[i][j],2)
         
     sig = math.sqrt(sig)
-    return np.asanyarray([x[i]/sig for i in range (x.size)])
+    return np.asanyarray([x[row][col]/sig for col in range(x.shape[1]) for row in range (x.shape[0])]).reshape(x.shape)
 
     
 def euclidian(data):
@@ -251,4 +245,4 @@ def euclidian(data):
     return data
 
 def div(x):
-    return 1000/x
+    return 10000/x
